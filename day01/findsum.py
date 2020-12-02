@@ -26,7 +26,7 @@ def input_file_to_list(input_path: str) -> List[int]:
     return result
 
 
-if __name__ == '__main__':
+def calc_numbers():
     input_list = input_file_to_list("input_data.txt")
     two_numbers = find_to_sum(input_list, 2020)
     print(f"The two numbers are {two_numbers[0]} and {two_numbers[1]}")
@@ -35,3 +35,7 @@ if __name__ == '__main__':
     three_numbers = find_three_sum(input_list, 2020)
     print(f"The three numbers are {three_numbers[0]}, {three_numbers[1]} and {three_numbers[2]}")
     print(f"Answer to part2 is {three_numbers[0] * three_numbers[1] * three_numbers[2]}")
+
+
+if __name__ == '__main__':
+    calc_numbers()
