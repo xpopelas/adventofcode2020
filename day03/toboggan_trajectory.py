@@ -1,0 +1,44 @@
+class Plane2D:
+    def __init__(self, input_path: str = None):
+        self.gameplan = [[]]
+        if input_path is not None:
+            self.__from_file(input_path)
+
+    def width(self) -> int:
+        return len(self.gameplan[0])
+
+    def height(self) -> int:
+        return len(self.gameplan)
+
+    def at(self, x, y):
+        return self.gameplan[y % self.height()][x % self.width()]
+
+    def __from_file(self, input_path):
+        self.gameplan = []
+        with open(input_path, 'r') as fh:
+            for line in fh:
+                self.gameplan.append([i for i in line.strip()])
+
+    def traverse(self, x_inc, y_inc, length, x=0, y=0, search='#'):
+        result = 0
+        for _ in range(length):
+            x += x_inc
+            y += y_inc
+            if self.at(x, y) == search:
+                result += 1
+        return result
+
+
+def count_trees():
+    my_plane = Plane2D("input_data.txt")
+    print(f"There are total of {my_plane.traverse(3, 1, my_plane.height() - 1)} trees in sight")
+
+    result = 1
+    for x, y in [(1, 1), (3, 1), (5, 1), (7, 1), (1, 2)]:
+        result *= my_plane.traverse(x, y, int((my_plane.height() - 1) / y))
+
+    print(f"The total multiplied number is {result}")
+
+
+if __name__ == '__main__':
+    count_trees()
