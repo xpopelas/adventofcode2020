@@ -1,25 +1,27 @@
 import re
-from typing import List
+from typing import List, Dict
 
 
 class Passport:
-    def __init__(self, tokens):
+    data_keys: Dict
+
+    def __init__(self, tokens: List[str]):
         self.data_keys = {}
         self.load_tokens(tokens)
 
-    def load_tokens(self, tokens: List[str]):
+    def load_tokens(self, tokens: List[str]) -> None:
         for token in tokens:
             parts = token.split(':')
             self.data_keys[parts[0]] = parts[1]
 
-    def has_req_keys(self):
+    def has_req_keys(self) -> bool:
         valid_keys = ["byr", "iyr", "eyr", "hgt", "hcl", "ecl", "pid"]
         for key in valid_keys:
             if key not in self.data_keys:
                 return False
         return True
 
-    def is_valid_values(self, valid_values):
+    def is_valid_values(self, valid_values: List[int]) -> bool:
         if not self.has_req_keys():
             return False
 
@@ -29,7 +31,7 @@ class Passport:
 
         return True
 
-    def is_valid_regex(self, key, regex):
+    def is_valid_regex(self, key: str, regex) -> bool:
         return regex.match(self.data_keys[key])
 
 
@@ -55,15 +57,13 @@ def file_to_tokens(input_path: str) -> List[List[str]]:
     return result
 
 
-def get_valid_passports():
-    tokens = file_to_tokens("input_data.txt")
-    passports = []
-    for token_bundle in tokens:
-        passports.append(Passport(token_bundle))
-
+def part_one(passports: List[Passport]) -> List[Passport]:
     has_keys = [p for p in passports if p.has_req_keys()]
     print(f"There are total of {len(has_keys)} passports with required keys out of {len(passports)}")
+    return has_keys
 
+
+def part_two(passports: List[Passport]) -> None:
     valid_values = {
         "byr": [str(byr) for byr in range(1920, 2003)],
         "iyr": [str(iyr) for iyr in range(2010, 2021)],
@@ -75,12 +75,26 @@ def get_valid_passports():
     valid_hcl = re.compile('^#[\d|a-f]{6}$')
     valid_pid = re.compile('^\d{9}$')
 
-    has_valid_values = list(filter(lambda x: x.is_valid_values(valid_values), has_keys))
+    has_valid_values = list(filter(lambda x: x.is_valid_values(valid_values), passports))
     has_valid_hcl = list(filter(lambda x: x.is_valid_regex('hcl', valid_hcl), has_valid_values))
     has_valid_pid = list(filter(lambda x: x.is_valid_regex('pid', valid_pid), has_valid_hcl))
 
     print(f"There are total of {len(has_valid_pid)} valid passports out of {len(passports)}")
 
 
+def create_passports(input_path: str = "input_data.txt") -> List[Passport]:
+    tokens = file_to_tokens(input_path)
+    passports = []
+    for token_bundle in tokens:
+        passports.append(Passport(token_bundle))
+    return passports
+
+
+def main():
+    passports = create_passports()
+    passports = part_one(passports)
+    part_two(passports)
+
+
 if __name__ == '__main__':
-    get_valid_passports()
+    main()
